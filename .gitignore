@@ -1,0 +1,19 @@
+# Build folders
+[Bb]in/
+[Oo]bj/
+out/
+
+# IDE files (Visual Studio & VS Code)
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Secrets and Environment configs
+appsettings.Development.json
+usersecrets.json
+.env
+
+# Docker
+.dockerignore
