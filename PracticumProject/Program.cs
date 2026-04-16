@@ -1,34 +1,26 @@
 using PracticumProject.Components;
 using PracticumProject.Data;
+using Projects;
 using System.Net.Sockets;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+var postgres = builder
+    .AddPostgres("postgres")
+    .WithPgAdmin()
+    .WithDataVolume()
+    .WithLifetime(ContainerLifetime.Session);
+var db = postgres.AddDatabase("db", "loan-web");
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+var migrations = builder
+    .AddProject<Projects.PracticumProject>("migrations")
+    .WithReference(db)
+    .WaitFor(db);
 
-builder.AddNpgsqlDbContext<AppDbContext>("loan-db");
 
-var app = builder.Build();
+var api = builder
+    .AddProject<Projects.PracticumProject>("api")
+    .WithReference(db)
+    .WaitFor(migrations);
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwaggerUI(options => {
-        options.SwaggerEndpoint("/openapi/v1.json", "Loan API v1");
-        options.RoutePrefix = "swagger";
-    });
-}
-
-app.MapDefaultEndpoints();
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.MapGet("/test-loan", () => "Loan System Active");
-
-app.Run();
+builder.Build().Run();
