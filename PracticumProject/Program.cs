@@ -1,30 +1,36 @@
+using Aspire.Npgsql.EntityFrameworkCore.PostgreSQL;
 using PracticumProject.Components;
+using PracticumProject.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.AddNpgsqlDbContext<AppDbContext>("loan-db");
+
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+    app.MapOpenApi(); // Generates the spec at /openapi/v1.json
 
+    // If you still want the Swagger UI look, this maps to the new spec
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Loan API v1");
+    });
+}
+
+app.MapDefaultEndpoints();
+app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

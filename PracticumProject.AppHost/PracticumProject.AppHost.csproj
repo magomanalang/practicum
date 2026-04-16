@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.2.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PracticumProject\PracticumProject.csproj" />
   </ItemGroup>
 
