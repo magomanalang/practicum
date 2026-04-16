@@ -1,4 +1,3 @@
-using Aspire.Npgsql.EntityFrameworkCore.PostgreSQL;
 using PracticumProject.Components;
 using PracticumProject.Data;
 
@@ -15,15 +14,15 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi(); // Generates the spec at /openapi/v1.json
+    app.UseSwagger(c => {
+        c.RouteTemplate = "swagger/{documentName}/swagger.json";
+    });
 
-    // If you still want the Swagger UI look, this maps to the new spec
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Loan API v1");
+    app.UseSwaggerUI(c => {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Loan API v1");
+        c.RoutePrefix = "swagger"; // This makes it live at /swagger
     });
 }
 
@@ -33,5 +32,7 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapGet("/test-loan", () => "Loan System Active");
 
 app.Run();
