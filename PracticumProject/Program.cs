@@ -1,5 +1,6 @@
 using PracticumProject.Components;
 using PracticumProject.Data;
+using System.Net.Sockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +11,14 @@ builder.Services.AddRazorComponents()
 
 builder.AddNpgsqlDbContext<AppDbContext>("loan-db");
 
-builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(c => {
-        c.RouteTemplate = "swagger/{documentName}/swagger.json";
-    });
-
-    app.UseSwaggerUI(c => {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Loan API v1");
-        c.RoutePrefix = "swagger"; // This makes it live at /swagger
+    app.MapOpenApi();
+    app.UseSwaggerUI(options => {
+        options.SwaggerEndpoint("/openapi/v1.json", "Loan API v1");
+        options.RoutePrefix = "swagger";
     });
 }
 
