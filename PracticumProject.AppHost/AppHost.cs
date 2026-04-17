@@ -5,4 +5,6 @@ var postgres = builder.AddPostgres("postgres")
 
 var web = builder.AddExternalService("web", "http://localhost:3000");
 
+builder.AddProject<Projects.Api>("api");
+
 builder.Build().Run();

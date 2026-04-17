@@ -1,3 +1,5 @@
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -11,6 +13,11 @@ app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options => 
+    {options.WithTitle("Practicum API")
+        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient); }
+        );
+    
 }
 
 app.UseHttpsRedirection();
